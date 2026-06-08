@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>co.empresa</groupId>
-    <artifactId>notification-service</artifactId>
+    <artifactId>analytics-audit-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>notification-service</name>
-    <description>Notification Service</description>
+    <name>analytics-audit-service</name>
+    <description>Analytics Audit Service</description>
     <url/>
     <licenses>
         <license/>
