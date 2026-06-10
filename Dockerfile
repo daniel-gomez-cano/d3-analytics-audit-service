@@ -1,24 +1,23 @@
-# ============================================================
-# Dockerfile — d3-event-service (Spring Boot + PostgreSQL)
-# ============================================================
+# ── Build stage ──────────────────────────────────────────────────────────────
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
-
-COPY pom.xml ./
-RUN mvn -q dependency:go-offline
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
 
 COPY src ./src
-RUN mvn -q -DskipTests package
+RUN mvn clean package -DskipTests -q
 
-FROM eclipse-temurin:21-jre
+# ── Runtime stage ─────────────────────────────────────────────────────────────
+FROM eclipse-temurin:21-jre-alpine
+
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar /app/app.jar
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
-# Puerto del event-service
-EXPOSE 8081
+COPY --from=builder /app/target/analytics-audit-service-*.jar app.jar
 
-ENV JAVA_OPTS="-Xms128m -Xmx256m"
+EXPOSE 8087
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
