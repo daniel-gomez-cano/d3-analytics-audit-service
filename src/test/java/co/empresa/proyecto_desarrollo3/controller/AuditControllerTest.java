@@ -47,8 +47,8 @@ class AuditControllerTest {
                 .id(1L)
                 .eventType("ORDER_CONFIRMED")
                 .entityType("ORDER")
-                .entityId(100L)
-                .userId(5L)
+                .entityId("100")
+                .userId("5")
                 .payload("{\"orderId\":100}")
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -89,8 +89,8 @@ class AuditControllerTest {
         AuditLogRequestDTO request = AuditLogRequestDTO.builder()
                 .eventType("ORDER_CONFIRMED")
                 .entityType("ORDER")
-                .entityId(100L)
-                .userId(5L)
+                .entityId("100")
+                .userId("5")
                 .payload("{\"orderId\":100}")
                 .build();
 
@@ -109,7 +109,7 @@ class AuditControllerTest {
     void createLog_missingEventType_returns400() throws Exception {
         AuditLogRequestDTO request = AuditLogRequestDTO.builder()
                 .entityType("ORDER")
-                .entityId(100L)
+                .entityId("100")
                 .build();
 
         mockMvc.perform(post("/audit/logs")
@@ -125,7 +125,9 @@ class AuditControllerTest {
     void createLog_missingEntityType_returns400() throws Exception {
         AuditLogRequestDTO request = AuditLogRequestDTO.builder()
                 .eventType("ORDER_CONFIRMED")
-                .entityId(100L)
+                .entityId("100")
+                .userId("5")
+                .payload("{\"orderId\":100}")
                 .build();
 
         mockMvc.perform(post("/audit/logs")
@@ -139,11 +141,11 @@ class AuditControllerTest {
     @DisplayName("GET /audit/logs/entity/{entityType}/{entityId} - filtra por entidad")
     @WithMockUser(roles = "ADMIN")
     void getLogsByEntity_shouldFilter() throws Exception {
-        when(auditService.getLogsByEntityType("ORDER", 100L)).thenReturn(List.of(sampleResponse));
+        when(auditService.getLogsByEntityType("ORDER", "100")).thenReturn(List.of(sampleResponse));
 
         mockMvc.perform(get("/audit/logs/entity/ORDER/100"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].entityId").value(100));
+                .andExpect(jsonPath("$[0].entityId").value("100"));
     }
 
     @Test
