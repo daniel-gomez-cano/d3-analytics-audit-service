@@ -1,6 +1,5 @@
-package co.empresa.proyecto_desarrollo3.model;
+package co.empresa.proyecto_desarrollo3.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -8,19 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "audit_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuditLog {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class AuditLogRequestDTO {
 
     @NotBlank(message = "eventType is required")
     private String eventType;
@@ -33,15 +24,5 @@ public class AuditLog {
 
     private Long userId;
 
-    @Column(columnDefinition = "TEXT")
     private String payload;
-
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-    }
 }

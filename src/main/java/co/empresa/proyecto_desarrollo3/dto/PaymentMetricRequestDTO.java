@@ -1,25 +1,16 @@
-package co.empresa.proyecto_desarrollo3.model;
+package co.empresa.proyecto_desarrollo3.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "payment_metrics")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentMetric {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PaymentMetricRequestDTO {
 
     @PositiveOrZero(message = "approvedCount must be >= 0")
     private Integer approvedCount;
@@ -29,12 +20,4 @@ public class PaymentMetric {
 
     @PositiveOrZero(message = "pendingCount must be >= 0")
     private Integer pendingCount;
-
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

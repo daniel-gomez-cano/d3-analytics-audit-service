@@ -7,9 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AnalyticsAuditServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(
-                AnalyticsAuditServiceApplication.class,
-                args
-        );
+        SpringApplication.run(AnalyticsAuditServiceApplication.class, args);
     }
 }
