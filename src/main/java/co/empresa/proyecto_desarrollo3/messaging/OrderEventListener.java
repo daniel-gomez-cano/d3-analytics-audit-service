@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.empresa.proyecto_desarrollo3.config.RabbitMQConfig;
-import co.empresa.proyecto_desarrollo3.dto.OrderEventDTO;
+import co.empresa.proyecto_desarrollo3.dto.PaymentResultEvent;
 import co.empresa.proyecto_desarrollo3.dto.OrderCreatedEvent;
 import co.empresa.proyecto_desarrollo3.service.AnalyticsService;
 import co.empresa.proyecto_desarrollo3.service.AuditService;
@@ -37,6 +37,9 @@ public class OrderEventListener {
                 event.getTotal()
         );
 
+        log.info("ANTES DE GUARDAR AUDITORIA");
+
+
         try {
 
             String payload = objectMapper.writeValueAsString(event);
@@ -44,10 +47,11 @@ public class OrderEventListener {
             auditService.saveInternal(
                     "ORDER_CREATED",
                     "ORDER",
-                    1L,
-                    1L,
+                    event.getCartId(),
+                    event.getBuyerId(),
                     payload
             );
+        log.info("AUDITORIA GUARDADA");
 
         } catch (Exception e) {
             log.error("Error procesando evento: {}", e.getMessage());
@@ -59,29 +63,30 @@ public class OrderEventListener {
      * Registra en auditoría y actualiza métricas de pagos.
      */
     @RabbitListener(queues = RabbitMQConfig.PAYMENT_RESULT_QUEUE)
-    public void handlePaymentResult(OrderEventDTO event) {
-        log.info("Received payment event: orderId={}, paymentStatus={}", event.getOrderId(), event.getPaymentStatus());
+    public void handlePaymentResult(PaymentResultEvent event) {
+        log.info("Received payment event: cartId={}, paymentId={}, status={}", event.getCartId(), event.getPaymentId(), event.getStatus());
         try {
             String payload = objectMapper.writeValueAsString(event);
             auditService.saveInternal(
-                    "PAYMENT_" + event.getPaymentStatus(),
+                    "PAYMENT_" + event.getStatus(),
                     "PAYMENT",
-                    event.getOrderId(),
-                    event.getUserId(),
+                    event.getCartId(),
+                    event.getBuyerId(),
                     payload
             );
 
-            analyticsService.recordPaymentEvent(
-                    event.getPaymentStatus(),
-                    event.getEventId(),
-                    event.getTicketCount(),
-                    event.getTotalAmount()
+            auditService.saveInternal(
+                "PAYMENT_" + event.getStatus(),
+                "PAYMENT",
+                event.getPaymentId(),
+                event.getBuyerId(),
+                payload
             );
 
         } catch (JsonProcessingException e) {
             log.error("Error serializing payment event payload: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Error processing payment event orderId={}: {}", event.getOrderId(), e.getMessage());
+            log.error("Error processing payment event cartId={}: {}", event.getCartId(), e.getMessage());
         }
     }
 }

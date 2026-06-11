@@ -2,7 +2,6 @@ package co.empresa.proyecto_desarrollo3.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -28,10 +27,10 @@ public class AuditLog {
     @NotBlank(message = "entityType is required")
     private String entityType;
 
-    @NotNull(message = "entityId is required")
-    private Long entityId;
+    @NotBlank(message = "entityId is required")
+    private String entityId;
 
-    private Long userId;
+    private String userId;
 
     @Column(columnDefinition = "TEXT")
     private String payload;
