@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.empresa.proyecto_desarrollo3.config.RabbitMQConfig;
 import co.empresa.proyecto_desarrollo3.dto.OrderEventDTO;
+import co.empresa.proyecto_desarrollo3.dto.OrderCreatedEvent;
 import co.empresa.proyecto_desarrollo3.service.AnalyticsService;
 import co.empresa.proyecto_desarrollo3.service.AuditService;
 import lombok.RequiredArgsConstructor;
@@ -27,33 +28,29 @@ public class OrderEventListener {
      * Registra en auditoría y acumula métricas de ventas.
      */
     @RabbitListener(queues = RabbitMQConfig.ORDER_CREATED_QUEUE)
-    public void handleOrderConfirmed(OrderEventDTO event) {
-        log.info("Received order event: orderId={}, status={}", event.getOrderId(), event.getStatus());
+    public void handleOrderConfirmed(OrderCreatedEvent event) {
+
+        log.info(
+                "ORDER RECIBIDA -> cartId={} buyerId={} total={}",
+                event.getCartId(),
+                event.getBuyerId(),
+                event.getTotal()
+        );
+
         try {
-            // 1. Registrar en auditoría
+
             String payload = objectMapper.writeValueAsString(event);
+
             auditService.saveInternal(
-                    "ORDER_" + event.getStatus(),
+                    "ORDER_CREATED",
                     "ORDER",
-                    event.getOrderId(),
-                    event.getUserId(),
+                    1L,
+                    1L,
                     payload
             );
 
-            // 2. Si la orden es CONFIRMED, acumular métricas de ventas
-            if ("CONFIRMED".equalsIgnoreCase(event.getStatus())) {
-                analyticsService.recordPaymentEvent(
-                        event.getPaymentStatus() != null ? event.getPaymentStatus() : "APPROVED",
-                        event.getEventId(),
-                        event.getTicketCount(),
-                        event.getTotalAmount()
-                );
-            }
-
-        } catch (JsonProcessingException e) {
-            log.error("Error serializing order event payload: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Error processing order event orderId={}: {}", event.getOrderId(), e.getMessage());
+            log.error("Error procesando evento: {}", e.getMessage());
         }
     }
 
