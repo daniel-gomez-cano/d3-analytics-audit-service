@@ -16,8 +16,8 @@ public class AuditLogResponseDTO {
     private Long id;
     private String eventType;
     private String entityType;
-    private Long entityId;
-    private Long userId;
+    private String entityId;
+    private String userId;
     private String payload;
     private LocalDateTime createdAt;
 }

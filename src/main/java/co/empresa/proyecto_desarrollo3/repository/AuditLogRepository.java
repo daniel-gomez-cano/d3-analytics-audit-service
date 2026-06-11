@@ -12,9 +12,9 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
     List<AuditLog> findByEventType(String eventType);
 
-    List<AuditLog> findByEntityTypeAndEntityId(String entityType, Long entityId);
+    List<AuditLog> findByEntityTypeAndEntityId(String entityType, String entityId);
 
-    List<AuditLog> findByUserId(Long userId);
+    List<AuditLog> findByUserId(String userId);
 
     List<AuditLog> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
 }

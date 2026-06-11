@@ -36,8 +36,8 @@ class AuditServiceTest {
                 .id(1L)
                 .eventType("ORDER_CONFIRMED")
                 .entityType("ORDER")
-                .entityId(100L)
-                .userId(5L)
+                .entityId("100")
+                .userId("5")
                 .payload("{\"orderId\":100}")
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -51,8 +51,8 @@ class AuditServiceTest {
         AuditLogRequestDTO request = AuditLogRequestDTO.builder()
                 .eventType("ORDER_CONFIRMED")
                 .entityType("ORDER")
-                .entityId(100L)
-                .userId(5L)
+                .entityId("100")
+                .userId("5")
                 .payload("{\"orderId\":100}")
                 .build();
 
@@ -61,8 +61,8 @@ class AuditServiceTest {
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getEventType()).isEqualTo("ORDER_CONFIRMED");
         assertThat(response.getEntityType()).isEqualTo("ORDER");
-        assertThat(response.getEntityId()).isEqualTo(100L);
-        assertThat(response.getUserId()).isEqualTo(5L);
+        assertThat(response.getEntityId()).isEqualTo("100");
+        assertThat(response.getUserId()).isEqualTo("5");
         verify(repository, times(1)).save(any(AuditLog.class));
     }
 
@@ -71,7 +71,7 @@ class AuditServiceTest {
     void saveInternal_shouldPersist() {
         when(repository.save(any(AuditLog.class))).thenReturn(sampleLog);
 
-        auditService.saveInternal("ORDER_CONFIRMED", "ORDER", 100L, 5L, "{\"orderId\":100}");
+        auditService.saveInternal("ORDER_CONFIRMED", "ORDER", "100", "5", "{\"orderId\":100}");
 
         verify(repository, times(1)).save(any(AuditLog.class));
     }
@@ -100,13 +100,13 @@ class AuditServiceTest {
     @Test
     @DisplayName("getLogsByEntityType - filtra por entityType y entityId")
     void getLogsByEntityType_shouldFilter() {
-        when(repository.findByEntityTypeAndEntityId("ORDER", 100L))
+        when(repository.findByEntityTypeAndEntityId("ORDER", "100"))
                 .thenReturn(List.of(sampleLog));
 
-        List<AuditLogResponseDTO> result = auditService.getLogsByEntityType("ORDER", 100L);
+        List<AuditLogResponseDTO> result = auditService.getLogsByEntityType("ORDER", "100");
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getEntityId()).isEqualTo(100L);
+        assertThat(result.get(0).getEntityId()).isEqualTo("100");
     }
 
     @Test

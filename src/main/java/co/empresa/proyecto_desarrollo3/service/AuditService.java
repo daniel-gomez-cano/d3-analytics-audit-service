@@ -36,8 +36,12 @@ public class AuditService {
     }
 
     @Transactional
-    public void saveInternal(String eventType, String entityType, Long entityId,
-                             Long userId, String payload) {
+    public void saveInternal(
+        String eventType,
+        String entityType,
+        String entityId,
+        String userId,
+        String payload) {
         AuditLog auditLog = AuditLog.builder()
                 .eventType(eventType)
                 .entityType(entityType)
@@ -57,7 +61,9 @@ public class AuditService {
     }
 
     @Transactional(readOnly = true)
-    public List<AuditLogResponseDTO> getLogsByEntityType(String entityType, Long entityId) {
+    public List<AuditLogResponseDTO> getLogsByEntityType(
+        String entityType,
+        String entityId) {
         return repository.findByEntityTypeAndEntityId(entityType, entityId)
                 .stream()
                 .map(this::toResponse)

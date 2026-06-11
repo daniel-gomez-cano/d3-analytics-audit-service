@@ -26,7 +26,7 @@ public class AuditController {
     @GetMapping("/logs/entity/{entityType}/{entityId}")
     public ResponseEntity<List<AuditLogResponseDTO>> getLogsByEntity(
             @PathVariable String entityType,
-            @PathVariable Long entityId) {
+            @PathVariable String entityId) {
         return ResponseEntity.ok(service.getLogsByEntityType(entityType, entityId));
     }
 
